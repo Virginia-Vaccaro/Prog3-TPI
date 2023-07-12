@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Diet_proyecto.Entities
 {
 
-    public class Odenes
+    public class Ordenes
     {
         [Key]
 
@@ -13,6 +13,5 @@ namespace Diet_proyecto.Entities
         [ForeignKey("ClienteId")]
         public Cliente  ClienteOrden { get; set; }
 
-        public ICollection<Product> Product { get; set; } = new List<Product>();
     }
 }
