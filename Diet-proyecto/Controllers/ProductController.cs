@@ -1,6 +1,8 @@
-﻿using Diet_proyecto.Models;
+﻿using Diet_proyecto.Entities;
+using Diet_proyecto.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Diet_proyecto.DBContext;
 
 namespace Diet_proyecto.Controllers
 {
@@ -23,36 +25,109 @@ namespace Diet_proyecto.Controllers
 
             var productDtos = products.Select(p => new ProductDto
             {
-                code = p.Id,
-                description = p.Name,
+                code = p.code,
+                description = p.description,
+                price = p.price,
+                Quantity = p.Quantity,
 
             }).ToList();
 
             return Ok(productDtos);
         }
 
-    //    [HttpGet("{id}")]
-    //    //public ActionResult<ProductDto> GetProduct(int id)
-    //    //{
-    //    //    // Obtener por su ID
-    //    //}
+        [HttpGet("{id}")]
+        public ActionResult<ProductDto> GetProduct(int id)
+        {
+            var product = _dbContext.Products.FirstOrDefault(p => p.Id == id);
 
-    //    //[HttpPost]
-    //    //public ActionResult<ProductDto> CreateProduct(ProductDto product)
-    //    //{
-    //    //    // Crear nuevo
-    //    //}
+            if (product == null)
+            {
+                return NotFound();
+            }
 
-    //    //[HttpPut("{id}")]
-    //    //public ActionResult<ProductDto> UpdateProduct(int id, ProductDto product)
-    //    //{
-    //    //    // Actualizar  existente
-    //    //}
+            var productDto = new ProductDto
+            {
+                code = product.code,
+                description = product.description,
+                price = product.price,
+                Quantity = product.Quantity,
+            };
 
-    //    //[HttpDelete("{id}")]
-    //    //public ActionResult<ProductDto> DeleteProduct(int id)
-    //    //{
-    //    //    //Eliminar por su ID
-    //    //}
+            return Ok(productDto);
+        }
+
+        [HttpPost]
+        public ActionResult<ProductDto> CreateProduct(ProductDto product)
+        {
+            if (product == null)
+            {
+                return BadRequest("El objeto product no puede ser nulo.");
+            }
+
+            if (string.IsNullOrEmpty(product.description))
+            {
+                return BadRequest("La descripción del producto es requerida.");
+            }
+
+            var prod = new Product
+            {
+                description = product.description,
+                price = product.price,
+                Quantity = product.Quantity,
+            };
+
+            _dbContext.Products.Add(prod);
+            _dbContext.SaveChanges();
+
+            product.code = prod.code;
+            // Actualizar otras propiedades según tus necesidades
+
+            return CreatedAtAction(nameof(GetProduct), new { id = prod.Id }, product);
+        }
+
+        [HttpPut("{id}")]
+        public ActionResult<ProductDto> UpdateProduct(int id, ProductDto product)
+        {
+            if (product == null)
+            {
+                return BadRequest("El objeto product no puede ser nulo.");
+            }
+
+            if (string.IsNullOrEmpty(product.description))
+            {
+                return BadRequest("La descripción del producto es requerida.");
+            }
+
+            var prod = _dbContext.Products.FirstOrDefault(p => p.Id == id);
+
+            if (prod == null)
+            {
+                return NotFound();
+            }
+
+            prod.price = product.price;
+            prod.Quantity = product.Quantity;
+
+            _dbContext.SaveChanges();
+
+            return Ok(product);
+
+        }
+
+        [HttpDelete("{id}")]
+        public ActionResult<ProductDto> DeleteProduct(int id)
+        {
+            var product = _dbContext.Products.FirstOrDefault(p => p.Id == id);
+
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            _dbContext.Products.Remove(product);
+            _dbContext.SaveChanges();
+
+            return Ok();
+        }
     }
 }

@@ -6,14 +6,15 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.JSInterop.Infrastructure;
 
-namespace Diet_proyecto.DbContext
+namespace Diet_proyecto.DBContext
 {
     public class OrdenesClientesContext : DbContext
     {
     //   //cargar todos los DbSet de todas las entities y luego armar el constructor
-    //   public DbSet<Vendedor_> Vendedor { get; set; }
-    //    public DbSet<Cliente> Clientes { get; set; }
-    //    public DbSet<User> Users { get; set; }  
+
+        public DbSet<Vendedor_> Vendedor { get; set; }
+        public DbSet<Cliente> Clientes { get; set; }
+        public DbSet<User> Users { get; set; }  
     //    public DbSet<Ordenes> Ordenes { get; set; }
        public DbSet<Product> Products { get; set; }
 
