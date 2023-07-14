@@ -1,10 +1,14 @@
-﻿namespace Diet_proyecto.Models
+﻿using System.Collections.Generic;
+
+namespace Diet_proyecto.Models
 {
-    public class ProductDto
+    public interface IProductService
     {
-        public string Code { get; set; }
-        public string Description { get; set; }
-        public float Price { get; set; }
-        public string Img { get; set; }
+        IEnumerable<ProductDto> GetAll();
+        ProductDto Get(string code);
+        ProductDto Add(ProductDto product);
+        void Update(ProductDto product);
+        void Delete(string code);
     }
 }
+//MODIFICAR MÉTODOS SEGÚN NECESIDADES
