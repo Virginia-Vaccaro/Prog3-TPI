@@ -5,6 +5,9 @@ namespace Diet_proyecto.Entities
 {
     public class User
     {
+        public const string USER_TYPE_CLIENT = "Client";
+        public const string USER_TYPE_SALESMAN = "Salesman";
+
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
@@ -15,10 +18,8 @@ namespace Diet_proyecto.Entities
         public string Address { get; set; }
         public int DNI { get; set; }
         public int PhoneNumber { get; set; }
-
-
-        public ICollection<Cliente> Cliente { get; set; } = new List<Cliente>();    
-        public ICollection<Vendedor_> Vendedor { get; set; } = new List<Vendedor_>();
-        public ICollection<Product> Product { get; set; } = new List<Product>();    
+        [Required]
+        public string UserName { get; set; }
+        public string UserType { get; set; }
     }
 }

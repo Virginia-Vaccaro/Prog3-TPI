@@ -3,34 +3,27 @@ using Diet_proyecto.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Diet_proyecto.DBContext;
+using Diet_proyecto.Mappers;
 
 namespace Diet_proyecto.Controllers
 {
     [ApiController]
     [Route("api/product")]
-    //[Authorize]
+    [Authorize]
     public class ProductController : ControllerBase
     {
-        private readonly OrdenesClientesContext _dbContext;
+        private readonly DietContext _dbContext;
 
-        public ProductController(OrdenesClientesContext dbContext)
+        public ProductController(DietContext dbContext)
         {
             _dbContext = dbContext;
         }
 
         [HttpGet]
-       public ActionResult<IEnumerable<ProductDto>> GetProducts()
+        public ActionResult<IEnumerable<ProductDto>> GetProducts()
         {
             var products = _dbContext.Products.ToList();
-
-            var productDtos = products.Select(p => new ProductDto
-            {
-                code = p.code,
-                description = p.description,
-                price = p.price,
-                Quantity = p.Quantity,
-
-            }).ToList();
+            var productDtos = ProductMapper.Map(products);
 
             return Ok(productDtos);
         }
@@ -39,19 +32,12 @@ namespace Diet_proyecto.Controllers
         public ActionResult<ProductDto> GetProduct(int id)
         {
             var product = _dbContext.Products.FirstOrDefault(p => p.Id == id);
-
             if (product == null)
             {
                 return NotFound();
             }
 
-            var productDto = new ProductDto
-            {
-                code = product.code,
-                description = product.description,
-                price = product.price,
-                Quantity = product.Quantity,
-            };
+            var productDto = ProductMapper.Map(product);
 
             return Ok(productDto);
         }
@@ -59,28 +45,17 @@ namespace Diet_proyecto.Controllers
         [HttpPost]
         public ActionResult<ProductDto> CreateProduct(ProductDto product)
         {
-            if (product == null)
+            var validation = ValidateProduct(product);
+            if (!validation.IsValid)
             {
-                return BadRequest("El objeto product no puede ser nulo.");
+                return BadRequest(validation.ErrorMessage);
             }
 
-            if (string.IsNullOrEmpty(product.description))
-            {
-                return BadRequest("La descripción del producto es requerida.");
-            }
-
-            var prod = new Product
-            {
-                description = product.description,
-                price = product.price,
-                Quantity = product.Quantity,
-            };
+            var prod = ProductMapper.Map(product);
+            prod.CreationDate = DateTime.Now;
 
             _dbContext.Products.Add(prod);
             _dbContext.SaveChanges();
-
-            product.code = prod.code;
-            // Actualizar otras propiedades según tus necesidades
 
             return CreatedAtAction(nameof(GetProduct), new { id = prod.Id }, product);
         }
@@ -88,25 +63,23 @@ namespace Diet_proyecto.Controllers
         [HttpPut("{id}")]
         public ActionResult<ProductDto> UpdateProduct(int id, ProductDto product)
         {
-            if (product == null)
+            var validation = ValidateProduct(product);
+            if (!validation.IsValid)
             {
-                return BadRequest("El objeto product no puede ser nulo.");
-            }
-
-            if (string.IsNullOrEmpty(product.description))
-            {
-                return BadRequest("La descripción del producto es requerida.");
+                return BadRequest(validation.ErrorMessage);
             }
 
             var prod = _dbContext.Products.FirstOrDefault(p => p.Id == id);
-
             if (prod == null)
             {
                 return NotFound();
             }
 
-            prod.price = product.price;
-            prod.Quantity = product.Quantity;
+            prod.Code = product.Code;
+            prod.Description = product.Description;
+            prod.Price = product.Price;
+            prod.Img = prod.Img;
+            prod.LastModificationDate = DateTime.Now;
 
             _dbContext.SaveChanges();
 
@@ -118,7 +91,6 @@ namespace Diet_proyecto.Controllers
         public ActionResult<ProductDto> DeleteProduct(int id)
         {
             var product = _dbContext.Products.FirstOrDefault(p => p.Id == id);
-
             if (product == null)
             {
                 return NotFound();
@@ -128,6 +100,35 @@ namespace Diet_proyecto.Controllers
             _dbContext.SaveChanges();
 
             return Ok();
+        }
+
+        private ValidationResultDto ValidateProduct(ProductDto product)
+        {
+            var errores = new List<string>();
+
+            if (product == null)
+            {
+                errores.Add("Debe especificar los datos del producto.");
+            }
+            else
+            {
+                if (string.IsNullOrEmpty(product.Code))
+                {
+                    errores.Add("El código del producto es requerido.");
+                }
+
+                if (string.IsNullOrEmpty(product.Description))
+                {
+                    errores.Add("La descripción del producto es requerida.");
+                }
+
+                if (product.Price < 0)
+                {
+                    errores.Add("El precio debe ser igual o mayor a 0.");
+                }
+            }
+
+            return new ValidationResultDto { ErrorMessages = errores };
         }
     }
 }

@@ -10,6 +10,4 @@
         public int DNI { get; set; }
         public int PhoneNumber { get; set; }
     }
-
-    
 }
