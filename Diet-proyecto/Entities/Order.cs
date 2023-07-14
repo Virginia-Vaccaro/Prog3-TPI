@@ -12,5 +12,6 @@ namespace Diet_proyecto.Entities
 
         [ForeignKey("ClientId")]
         public Client Client { get; set; }
+        public ICollection<Client> Clients { get; set; } = new List<Client>();
     }
 }

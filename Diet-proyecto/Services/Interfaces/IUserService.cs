@@ -1,4 +1,4 @@
-using Diet_proyecto.Presentacion.Models;
+using Diet_proyecto.Models;
 
 namespace Diet_proyecto.API.Services.Interfaces
 {

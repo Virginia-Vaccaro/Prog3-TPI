@@ -4,7 +4,7 @@ namespace Diet_proyecto.Models
 {
     public class CreateUpdateProductDto
     {
-        //[Required]
+        [Required]
         public string Code { get; set; }
         public string Description { get; set; }
         public float Price { get; set; }

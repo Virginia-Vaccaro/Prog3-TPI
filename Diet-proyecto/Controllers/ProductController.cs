@@ -43,7 +43,7 @@ namespace Diet_proyecto.Controllers
         }
 
         [HttpPost]
-        public ActionResult<ProductDto> CreateProduct(ProductDto product)
+        public ActionResult<ProductDto> CreateProduct(CreateUpdateProductDto product)
         {
             var validation = ValidateProduct(product);
             if (!validation.IsValid)
@@ -61,7 +61,7 @@ namespace Diet_proyecto.Controllers
         }
 
         [HttpPut("{id}")]
-        public ActionResult<ProductDto> UpdateProduct(int id, ProductDto product)
+        public ActionResult<ProductDto> UpdateProduct(int id, CreateUpdateProductDto product)
         {
             var validation = ValidateProduct(product);
             if (!validation.IsValid)

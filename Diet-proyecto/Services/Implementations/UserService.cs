@@ -1,7 +1,8 @@
 using AutoMapper;
-using Diet_proyecto.API.Data;
+using Diet_proyecto.Data;
 using Diet_proyecto.API.Services.Interfaces;
-using Diet_proyecto.Presentacion.Models;
+using Diet_proyecto.Models;
+
 
 namespace Diet_proyecto.API.Services.Implementations
 {
