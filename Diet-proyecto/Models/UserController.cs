@@ -1,4 +1,4 @@
-﻿
+
 using Diet_proyecto.DBContext;
 using Diet_proyecto.Entities;
 using Diet_proyecto.Models;
@@ -127,6 +127,3 @@ namespace Diet_proyecto.Controllers
         }
     }
 }
-
-
-
