@@ -7,6 +7,7 @@ namespace Diet_proyecto.Entities
     {
         public const string USER_TYPE_CLIENT = "Client";
         public const string USER_TYPE_SALESMAN = "Salesman";
+        public const string USER_TYPE_ADMIN = "Admin";
 
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

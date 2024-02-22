@@ -9,6 +9,6 @@ namespace Diet_proyecto.Data
         {
         }
 
-        public Salesman? GetById(int id) => _context.Salesmen.Find(id);
+        public Salesman? GetById(int id) => _context.Salesman.Find(id);
     }
 }

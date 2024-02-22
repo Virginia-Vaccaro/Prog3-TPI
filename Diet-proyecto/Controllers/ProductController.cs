@@ -2,62 +2,56 @@
 using Diet_proyecto.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Diet_proyecto.DBContext;
-using Diet_proyecto.Mappers;
+using Diet_proyecto.Services.Interfaces;
+
 
 namespace Diet_proyecto.Controllers
 {
     [ApiController]
     [Route("api/product")]
-    [Authorize]
+    [Authorize(Roles ="Admin")]
     public class ProductController : ControllerBase
     {
-        private readonly DietContext _dbContext;
+        private readonly IProductService _productService;
 
-        public ProductController(DietContext dbContext)
+        public ProductController(IProductService productService)
         {
-            _dbContext = dbContext;
+            _productService = productService;
         }
 
         [HttpGet]
         public ActionResult<IEnumerable<ProductDto>> GetProducts()
         {
-            var products = _dbContext.Products.ToList();
-            var productDtos = ProductMapper.Map(products);
+            var products = _productService.GetAll();
 
-            return Ok(productDtos);
+            return Ok(products);
         }
 
         [HttpGet("{id}")]
         public ActionResult<ProductDto> GetProduct(int id)
         {
-            var product = _dbContext.Products.FirstOrDefault(p => p.Id == id);
+            var product = _productService.Get(id);
             if (product == null)
             {
                 return NotFound();
             }
 
-            var productDto = ProductMapper.Map(product);
-
-            return Ok(productDto);
+            return Ok(product);
         }
 
         [HttpPost]
-        public ActionResult<ProductDto> CreateProduct(CreateUpdateProductDto product)
+        public ActionResult<ProductDto> CreateProduct(CreateUpdateProductDto productDto)
         {
-            var validation = ValidateProduct(product);
+            var validation = ValidateProduct(productDto);
             if (!validation.IsValid)
             {
                 return BadRequest(validation.ErrorMessage);
             }
 
-            var prod = ProductMapper.Map(product);
-            prod.CreationDate = DateTime.Now;
+            var product = _productService.MapProductDtoToProduct(productDto);
+            var prod = _productService.Add(product);
 
-            _dbContext.Products.Add(prod);
-            _dbContext.SaveChanges();
-
-            return CreatedAtAction(nameof(GetProduct), new { id = prod.Id }, product);
+            return CreatedAtAction(nameof(GetProduct), new { id = prod.Id }, prod);
         }
 
         [HttpPut("{id}")]
@@ -69,7 +63,7 @@ namespace Diet_proyecto.Controllers
                 return BadRequest(validation.ErrorMessage);
             }
 
-            var prod = _dbContext.Products.FirstOrDefault(p => p.Id == id);
+            var prod = _productService.Get(id);
             if (prod == null)
             {
                 return NotFound();
@@ -80,29 +74,32 @@ namespace Diet_proyecto.Controllers
             prod.Price = product.Price;
             prod.Img = prod.Img;
             prod.LastModificationDate = DateTime.Now;
+            prod.StatusType = product.StatusType;
+     
 
-            _dbContext.SaveChanges();
+            _productService.Update(prod);
 
-            return Ok(product);
+            return Ok(prod);
 
         }
 
         [HttpDelete("{id}")]
         public ActionResult<ProductDto> DeleteProduct(int id)
         {
-            var product = _dbContext.Products.FirstOrDefault(p => p.Id == id);
+            var product = _productService.Get(id);
             if (product == null)
             {
                 return NotFound();
             }
 
-            _dbContext.Products.Remove(product);
-            _dbContext.SaveChanges();
+            //_dbContext.Products.Remove(product);
+            //product.StatusType = Enum.Status.Inactive;
+            _productService.Delete(id);
 
             return Ok();
         }
 
-        private ValidationResultDto ValidateProduct(ProductDto product)
+        private ValidationResultDto ValidateProduct(CreateUpdateProductDto product)
         {
             var errores = new List<string>();
 
