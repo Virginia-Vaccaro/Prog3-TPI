@@ -26,24 +26,24 @@ namespace Diet_proyecto.Services.Implementations
         }
 
         
-        public UserDto GetUserById(int id)
+        public UserDto GetUserById(int? id)
         {
             var user = _userRepository.GetUserById(id);
             return _mapper.Map<UserDto>(user);
         }
 
-        public UserDto CreateUser(UserDto userDto)
+        public CreateUpdateUserDto CreateUser(CreateUpdateUserDto createUpdateUserDto)
         {
-            var user = _mapper.Map<User>(userDto);
+            var user = _mapper.Map<User>(createUpdateUserDto);
             var createdUser = _userRepository.CreateUser(user); // ??
-            return _mapper.Map<UserDto>(createdUser);
+            return _mapper.Map<CreateUpdateUserDto>(createdUser);
         }
 
-        public UserDto UpdateUser(int id, UserDto userDto)
+        public CreateUpdateUserDto UpdateUser(int id, CreateUpdateUserDto createUpdateUserDto)
         {
-            var user = _mapper.Map<User>(userDto);
+            var user = _mapper.Map<User>(createUpdateUserDto);
             var updatedUser = _userRepository.UpdateUser(id, user); //??
-            return _mapper.Map<UserDto>(updatedUser);
+            return _mapper.Map<CreateUpdateUserDto>(updatedUser);
         }
 
         public void DeleteUser(int id)

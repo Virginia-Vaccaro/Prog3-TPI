@@ -11,6 +11,9 @@ namespace Diet_proyecto.Configurations
             CreateMap<User, UserDto>();
             CreateMap<UserDto, User>();
 
+            CreateMap<User, CreateUpdateUserDto>();
+            CreateMap<CreateUpdateUserDto, User>();
+
             CreateMap<Product, ProductDto>();
             CreateMap<ProductDto, Product>();
         }

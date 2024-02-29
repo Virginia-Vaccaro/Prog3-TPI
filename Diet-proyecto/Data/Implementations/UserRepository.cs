@@ -26,7 +26,7 @@ namespace Diet_proyecto.Data
         {
             return _context.Users.ToList();
         }
-        public User? GetUserById(int userId)
+        public User? GetUserById(int? userId)
         {
             return _context.Users.Find(userId);
         }

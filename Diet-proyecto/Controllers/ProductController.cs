@@ -22,81 +22,124 @@ namespace Diet_proyecto.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<ProductDto>> GetProducts()
         {
-            var products = _productService.GetAll();
+            try
+            {
+                var products = _productService.GetAll();
 
-            return Ok(products);
+                return Ok(products);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
         }
 
         [HttpGet("{id}")]
         public ActionResult<ProductDto> GetProduct(int id)
         {
-            var product = _productService.Get(id);
-            if (product == null)
+            try
             {
-                return NotFound();
-            }
+                var product = _productService.Get(id);
+                if (product == null)
+                {
+                    return NotFound();
+                }
 
-            return Ok(product);
+                return Ok(product);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
         }
 
         [HttpPost]
         public ActionResult<ProductDto> CreateProduct(CreateUpdateProductDto productDto)
         {
-            var validation = ValidateProduct(productDto);
-            if (!validation.IsValid)
+            try
             {
-                return BadRequest(validation.ErrorMessage);
+                var validation = ValidateProduct(productDto);
+                if (!validation.IsValid)
+                {
+                    return BadRequest(validation.ErrorMessage);
+                }
+
+                var product = _productService.MapProductDtoToProduct(productDto);
+                var prod = _productService.Add(product);
+
+                return CreatedAtAction(nameof(GetProduct), new { id = prod.Id }, prod);
             }
-
-            var product = _productService.MapProductDtoToProduct(productDto);
-            var prod = _productService.Add(product);
-
-            return CreatedAtAction(nameof(GetProduct), new { id = prod.Id }, prod);
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
         }
 
         [HttpPut("{id}")]
         public ActionResult<ProductDto> UpdateProduct(int id, CreateUpdateProductDto product)
         {
-            var validation = ValidateProduct(product);
-            if (!validation.IsValid)
+            try
             {
-                return BadRequest(validation.ErrorMessage);
-            }
+                var validation = ValidateProduct(product);
+                if (!validation.IsValid)
+                {
+                    return BadRequest(validation.ErrorMessage);
+                }
 
-            var prod = _productService.Get(id);
-            if (prod == null)
+                var prod = _productService.Get(id);
+                if (prod == null)
+                {
+                    return NotFound();
+                }
+
+                prod.Code = product.Code;
+                prod.Description = product.Description;
+                prod.Price = product.Price;
+                prod.Img = prod.Img;
+                prod.LastModificationDate = DateTime.Now;
+                prod.StatusType = product.StatusType;
+
+
+                _productService.Update(prod);
+
+                return Ok(prod);
+            }
+            catch (Exception ex)
             {
-                return NotFound();
+                return BadRequest(ex.Message);
             }
-
-            prod.Code = product.Code;
-            prod.Description = product.Description;
-            prod.Price = product.Price;
-            prod.Img = prod.Img;
-            prod.LastModificationDate = DateTime.Now;
-            prod.StatusType = product.StatusType;
-     
-
-            _productService.Update(prod);
-
-            return Ok(prod);
+            
 
         }
 
         [HttpDelete("{id}")]
         public ActionResult<ProductDto> DeleteProduct(int id)
         {
-            var product = _productService.Get(id);
-            if (product == null)
+            try
             {
-                return NotFound();
+                //if (!id.HasValue)
+                //{
+                //    return BadRequest("No se ingresó ningún id");
+                //}
+
+                var product = _productService.Get(id);
+                if (product == null)
+                {
+                    return NotFound();
+                }
+
+                _productService.Delete(id);
+
+                return Ok();
             }
-
-            //_dbContext.Products.Remove(product);
-            //product.StatusType = Enum.Status.Inactive;
-            _productService.Delete(id);
-
-            return Ok();
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
         }
 
         private ValidationResultDto ValidateProduct(CreateUpdateProductDto product)

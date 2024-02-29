@@ -5,11 +5,11 @@ namespace Diet_proyecto.Services.Interfaces
     public interface IUserService
     {
         IEnumerable<UserDto> GetAllUsers();
-        UserDto GetUserById(int id);
+        UserDto GetUserById(int? id);
 
-        UserDto CreateUser(UserDto userDto);
+        CreateUpdateUserDto CreateUser(CreateUpdateUserDto createUpdateUserDto);
 
-        UserDto UpdateUser(int id, UserDto userDto);
+        CreateUpdateUserDto UpdateUser(int id, CreateUpdateUserDto createUpdateUserDto);
 
         void DeleteUser(int id);
         //ICollection<ProductDto> GetProductByUser(int studentId);

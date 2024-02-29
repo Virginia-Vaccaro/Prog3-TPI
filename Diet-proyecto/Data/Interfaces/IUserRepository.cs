@@ -6,7 +6,7 @@ namespace Diet_proyecto.Data
     public interface IUserRepository : IRepository
     {
         User? ValidateUser(AuthenticationRequestBody authenticationRequestBody);
-        User? GetUserById(int userId);
+        User? GetUserById(int? userId);
 
         IEnumerable<User> GetAllUsers();
 

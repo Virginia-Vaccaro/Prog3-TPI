@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 
 namespace Diet_proyecto.Controllers
 {
@@ -23,113 +24,110 @@ namespace Diet_proyecto.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<UserDto>> GetUsers()
         {
-            // 1A-Obtener todos los usuarios
-            //var users = _context.Users.Select(u => new UserDto
-            //{
-            //    Name = u.Name,
-            //    LastName = u.LastName,
-            //    Password = u.Password,
-            //    Email = u.Email,
-            //    Address = u.Address,
-            //    DNI = u.DNI,
-            //    PhoneNumber = u.PhoneNumber
-            //}).ToList();
+            try
+            {
+                var users = _userService.GetAllUsers();
 
-            var users = _userService.GetAllUsers();
+                return Ok(users);
 
-            return Ok(users);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
         }
 
         [HttpGet("{id}")]
-        public ActionResult<UserDto> GetUser(int id)
+        public ActionResult<UserDto> GetUser(int? id)
         {
-            // 1B-Obtener un usuario por su ID
-            //var user = _context.Users.Find(id);
-            var user = _userService.GetUserById(id);
-            if (user == null)
+            try
             {
-                return NotFound();
+                if (!id.HasValue)
+                {
+                    return BadRequest("No se ingresó ningún id");
+                }
+
+                var user = _userService.GetUserById(id);
+                if (user == null)
+                {
+                    return NotFound();
+                }
+
+                return Ok(user);
             }
-
-            //var userDto = new UserDto
-            //{
-            //    Name = user.Name,
-            //    LastName = user.LastName,
-            //    Password = user.Password,
-            //    Email = user.Email,
-            //    Address = user.Address,
-            //    DNI = user.DNI,
-            //    PhoneNumber = user.PhoneNumber
-            //};
-
-            return Ok(user);
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
         }
 
         [HttpPost]
-        public ActionResult<UserDto> CreateUser(UserDto userDto)
+        public ActionResult<CreateUpdateUserDto> CreateUser(CreateUpdateUserDto createUpdateUserDto)
         {
-            // 2- Crear un nuevo usuario
-            //var user = new User
-            //{
-            //    Name = userDto.Name,
-            //    LastName = userDto.LastName,
-            //    Password = userDto.Password,
-            //    Email = userDto.Email,
-            //    Address = userDto.Address,
-            //    DNI = userDto.DNI,
-            //    PhoneNumber = userDto.PhoneNumber
-            //};
+            try
+            {
+                var user = _userService.CreateUser(createUpdateUserDto);
 
-            //_context.Users.Add(user);
-            //_context.SaveChanges();
+                return CreatedAtAction(nameof(GetUser), user);
 
-            var user = _userService.CreateUser(userDto);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
 
-            return CreatedAtAction(nameof(GetUser), userDto);
+            }
+            
         }
 
         [HttpPut("{id}")]
-        public ActionResult<UserDto> UpdateUser(int id, UserDto userDto)
+        public ActionResult<CreateUpdateUserDto> UpdateUser(int id, CreateUpdateUserDto createUpdateUserDto)
         {
-            // 3-Actualizar un usuario existente
-            //var user = _context.Users.Find(id);
-
-            var user = _userService.UpdateUser(id , userDto);
-            if (user == null)
+            try
             {
-                return NotFound();
+                //var userRole = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+                //if (userRole != "Admin")
+                //{
+                //    return Forbid();
+                //}
+
+                var user = _userService.UpdateUser(id, createUpdateUserDto);
+                if (user == null)
+                {
+                    return NotFound();
+                }
+
+                return NoContent();
             }
-
-            //user.Name = userDto.Name;
-            //user.LastName = userDto.LastName;
-            //user.Password = userDto.Password;
-            //user.Email = userDto.Email;
-            //user.Address = userDto.Address;
-            //user.DNI = userDto.DNI;
-            //user.PhoneNumber = userDto.PhoneNumber;
-
-            //_context.SaveChanges();
-
-            return NoContent();
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
         }
 
         [HttpDelete("{id}")]
         public ActionResult<UserDto> DeleteUser(int id)
         {
-            // 4-Eliminar un usuario por su ID
-            //var user = _context.Users.Find(id);
+            try
+            {
+                //var userRole = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+                //if (userRole != "Admin")
+                //{
+                //    return Forbid();
+                //}
 
-            //if (user == null)
-            //{
-            //    return NotFound();
-            //}
+                _userService.DeleteUser(id);
 
-            //_context.Users.Remove(user);
-            //_context.SaveChanges();
+                return NoContent();
 
-            _userService.DeleteUser(id);
-
-            return NoContent();
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
         }
     }
 }
