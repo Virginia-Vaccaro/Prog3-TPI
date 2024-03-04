@@ -9,10 +9,11 @@ namespace Diet_proyecto.Entities
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-        public int TotalPrice { get; set; }  //suma de todos los itemOrder
+        public float TotalPrice { get; set; }  //suma de todos los itemOrder
         public Status StatusType { get; set; }
         public PaymentStatus PaymentStatus { get; set; }
         public int ClientId { get; set; }
+        public List<ItemOrder> Items { get; set; }
 
         [ForeignKey("ClientId")]
         public Client Client { get; set; }
@@ -22,6 +23,7 @@ namespace Diet_proyecto.Entities
         {
             StatusType = Status.Inactive;
             PaymentStatus = PaymentStatus.Unpaid;
+            Items = new List<ItemOrder>();
         }
     }
 }

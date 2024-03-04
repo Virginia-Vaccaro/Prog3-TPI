@@ -11,14 +11,24 @@ namespace Diet_proyecto.Entities
         public int ItemOrderId { get; set; }
 
         public int Cantidad { get; set; }
-        public int PriceCalc { get; set; } //precio del producto por la cantidad del mismo
+        public float PriceCalc { get; set; }
 
         public int ProductId { get; set; }
         [ForeignKey("ProductId")]
         public Product Product { get; set; }
 
         public int? OrderId { get; set; }
-        [ForeignKey("OderId")]
+        [ForeignKey("OrderId")]
         public Order Order { get; set; }
+
+        public ItemOrder()
+        {
+        }
+
+        public ItemOrder(int cantidad , float precioProducto) 
+        { 
+            Cantidad = cantidad;
+            PriceCalc = Cantidad * precioProducto;
+        }
     }
 }

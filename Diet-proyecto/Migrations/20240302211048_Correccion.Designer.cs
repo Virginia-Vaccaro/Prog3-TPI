@@ -3,6 +3,7 @@ using System;
 using Diet_proyecto.DBContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Diet_proyecto.Migrations
 {
     [DbContext(typeof(DietContext))]
-    partial class DietContextModelSnapshot : ModelSnapshot
+    [Migration("20240302211048_Correccion")]
+    partial class Correccion
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.5");
@@ -30,6 +32,9 @@ namespace Diet_proyecto.Migrations
                         .IsRequired()
                         .HasColumnType("INTEGER");
 
+                    b.Property<int?>("OrderId1")
+                        .HasColumnType("INTEGER");
+
                     b.Property<float>("PriceCalc")
                         .HasColumnType("REAL");
 
@@ -39,6 +44,8 @@ namespace Diet_proyecto.Migrations
                     b.HasKey("ItemOrderId");
 
                     b.HasIndex("OrderId");
+
+                    b.HasIndex("OrderId1");
 
                     b.HasIndex("ProductId");
 
@@ -223,10 +230,14 @@ namespace Diet_proyecto.Migrations
             modelBuilder.Entity("Diet_proyecto.Entities.ItemOrder", b =>
                 {
                     b.HasOne("Diet_proyecto.Entities.Order", "Order")
-                        .WithMany("Items")
+                        .WithMany()
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("Diet_proyecto.Entities.Order", null)
+                        .WithMany("Items")
+                        .HasForeignKey("OrderId1");
 
                     b.HasOne("Diet_proyecto.Entities.Product", "Product")
                         .WithMany()

@@ -33,5 +33,29 @@ namespace Diet_proyecto.Mappers
                 Img = product.Img
             };
         }
+
+        public static CreateUpdateProductDto Map1(Product product)
+        {
+            return new CreateUpdateProductDto
+            {
+                Code = product.Code,
+                Description = product.Description,
+                Price = product.Price,
+                Img = product.Img,
+                StatusType = product.StatusType
+            };
+        }
+
+        public static Product Map1(CreateUpdateProductDto product)
+        {
+            return new Product
+            {
+                Code = product.Code,
+                Description = product.Description,
+                Price = product.Price,
+                Img = product.Img,
+                StatusType = product.StatusType
+            };
+        }
     }
 }

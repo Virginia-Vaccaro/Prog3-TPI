@@ -11,6 +11,7 @@ using Diet_proyecto.Data;
 using Diet_proyecto.Data.Interfaces;
 using Diet_proyecto.Data.Implementations;
 using Diet_proyecto.Configurations;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -78,6 +79,12 @@ builder.Services.AddAuthentication("Bearer") //"Bearer" es el tipo de auntentica
         };
     }
 );
+
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+});
+
 
 builder.Services.AddAuthorization();
 

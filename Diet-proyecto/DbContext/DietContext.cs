@@ -73,6 +73,10 @@ namespace Diet_proyecto.DBContext
                 .WithMany(c => c.Orders)
                 .HasForeignKey(o => o.ClientId);
 
+            modelBuilder.Entity<Order>()
+                .HasMany(i => i.Items)
+                .WithOne(o => o.Order);
+
             modelBuilder.Entity<Client>()
                 .HasMany(c => c.Orders)
                 .WithOne(o => o.Client)
@@ -86,7 +90,7 @@ namespace Diet_proyecto.DBContext
 
             modelBuilder.Entity<ItemOrder>()
                 .HasOne(o => o.Order)
-                .WithMany()
+                .WithMany(o => o.Items)
                 .HasForeignKey(i => i.OrderId);
 
             base.OnModelCreating(modelBuilder);

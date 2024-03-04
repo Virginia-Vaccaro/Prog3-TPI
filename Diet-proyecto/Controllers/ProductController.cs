@@ -9,7 +9,7 @@ namespace Diet_proyecto.Controllers
 {
     [ApiController]
     [Route("api/product")]
-    [Authorize(Roles ="Admin")]
+    [Authorize(Roles ="Salesman")]
     public class ProductController : ControllerBase
     {
         private readonly IProductService _productService;

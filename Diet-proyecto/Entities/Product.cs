@@ -21,6 +21,9 @@ namespace Diet_proyecto.Entities
         public Product()
         {
             StatusType = Status.Active;
+            
+            CreationDate = DateTime.Now;
+            
         }
     }
 }
