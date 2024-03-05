@@ -17,5 +17,17 @@ namespace Diet_proyecto.Data.Implementations
             await _context.SaveChangesAsync();
             return order;
         }
+
+        public async Task<Order?> GetOrderById(int id)
+        {
+            return await _context.Orders.FindAsync(id);
+        }
+
+        public async Task<Order> UpdateOrder(Order order)
+        {
+            _context.Orders.Update(order);
+            await _context.SaveChangesAsync();
+            return order;
+        }
     }
 }

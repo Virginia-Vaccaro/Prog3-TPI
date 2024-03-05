@@ -54,17 +54,30 @@ namespace Diet_proyecto.Services.Implementations
             return OrderMapper.Map(createdOrder);
         }
 
-        //public async Task(OrderDto) UpdateOrder(int id,  OrderDto orderDto)
-        //{
-        //    var existingOrder = await _orderRepository.GetOrderById(id);
-        //    if(existingOrder == null)
-        //    {
-        //        throw new Exception("No se encontró la orden.");
-        //    }
 
-        //    existingOrder.PaymentStatus = orderDto.PaymentStatus;
-        //    existingOrder.Quantity = orderDto.Quantity;
-        //}
+
+        public async Task<OrderDto> GetOrderById(int id)
+        {
+            var order = await _orderRepository.GetOrderById(id);
+
+            return OrderMapper.Map(order);
+        }
+
+        public async Task<OrderDto> UpdateOrder(int id,  OrderDto orderDto)
+        {
+            var existingOrder = await _orderRepository.GetOrderById(id);
+            if(existingOrder == null)
+            {
+                throw new Exception("No se encontró la orden.");
+            }
+
+            existingOrder.PaymentStatus = orderDto.PaymentStatus;
+            existingOrder.Items.FirstOrDefault().Cantidad = orderDto.Quantity;
+
+            var updatedOrder = await _orderRepository.UpdateOrder(existingOrder);
+
+            return OrderMapper.Map(updatedOrder);
+        }
 
 
     }

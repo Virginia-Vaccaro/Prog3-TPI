@@ -32,24 +32,43 @@ namespace Diet_proyecto.Controllers
             }
             catch (Exception ex)
             {
-               Console.WriteLine(ex.InnerException.Message);
                 return BadRequest(ex.Message);
             }
         }
 
-        //[HttpPut]
-        //public async Task<IActionResult> UpdateOrder(int id, [FromBody] OrderDto orderDto)
-        //{
-        //    try
-        //    {
-        //        var updatedOrder = await _orderService.UpdateOrder(id, orderDto);
-        //        return Ok(updatedOrder);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return BadRequest(ex.Message);
-        //    }
-        //}
+        [HttpGet("{id}")]
+
+        public async Task<IActionResult> GetOrderById(int id)
+        {
+            try
+            {
+                var order = await _orderService.GetOrderById(id);
+                if(order == null)
+                {
+                     return NotFound();
+                }
+                return Ok(order);
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> UpdateOrder(int id, [FromBody] OrderDto orderDto)
+        {
+            try
+            {
+                var updatedOrder = await _orderService.UpdateOrder(id, orderDto);
+                return Ok(updatedOrder);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
         
     }
 }
