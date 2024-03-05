@@ -72,7 +72,7 @@ namespace Diet_proyecto.Services.Implementations
             }
 
             existingOrder.PaymentStatus = orderDto.PaymentStatus;
-            existingOrder.Items.FirstOrDefault().Cantidad = orderDto.Quantity;
+            existingOrder.Items.FirstOrDefault().Cantidad = orderDto.Items.FirstOrDefault().Quantity;
 
             var updatedOrder = await _orderRepository.UpdateOrder(existingOrder);
 

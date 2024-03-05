@@ -14,18 +14,27 @@ namespace Diet_proyecto.Mappers
 
         public static OrderDto Map(Order order)
         {
-            var item = order.Items.FirstOrDefault();
+            if (order.Items ==  null || !order.Items.Any())
+            {
+                throw new InvalidOperationException("ítems vacíos o nulos");
+            }
+            //var item = order.Items.FirstOrDefault();
+
+            //string productDescription = item != null ? item.Product.Description : "Sin descripción";
 
             return new OrderDto
-            {
-                Id = order.Id,
-                ClientId = order.ClientId,
-                ProductDescription = item.Product.Description,
-                Quantity = item.Cantidad,
-                ItemPrice = item.PriceCalc,
-                TotalPrice = order.TotalPrice,
-                PaymentStatus = order.PaymentStatus,
-            };
+                {
+                    Id = order.Id,
+                    ClientId = order.ClientId,
+                    Items = order.Items.Select(ItemOrderMapper.Map).ToList(),
+                    //ProductDescription = item.Product.Description,
+                    //Quantity = item.Cantidad,
+                    //ItemPrice = item.PriceCalc,
+                    TotalPrice = order.TotalPrice,
+                    PaymentStatus = order.PaymentStatus,
+                };
+            
+            
         }
     }
 }
