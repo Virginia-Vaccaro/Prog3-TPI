@@ -24,15 +24,11 @@ namespace Diet_proyecto.Services.Implementations
         {
             var product = _mapper.Map<Product>(newProduct);
 
-            //product.OrdenId = ordenId;
-            //product.CreatorId = userId;
             product.CreationDate = DateTime.Now;
             product.StatusType = Status.Active;
 
             _productRepository.AddProduct(product);
             _productRepository.SaveChanges();
-
-            //_orderService.ChangeOrdenStatus(ordenId);
 
             return _mapper.Map<ProductDto>(product);
         }

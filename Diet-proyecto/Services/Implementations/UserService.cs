@@ -32,17 +32,17 @@ namespace Diet_proyecto.Services.Implementations
             return _mapper.Map<UserDto>(user);
         }
 
-        public CreateUpdateUserDto CreateUser(CreateUpdateUserDto createUpdateUserDto)
+        public User CreateUser(CreateUpdateUserDto createUserDto)
         {
-            var user = _mapper.Map<User>(createUpdateUserDto);
-            var createdUser = _userRepository.CreateUser(user); // ??
-            return _mapper.Map<CreateUpdateUserDto>(createdUser);
+            var user = _mapper.Map<User>(createUserDto);
+             _userRepository.CreateUser(user); 
+            return user;
         }
 
         public CreateUpdateUserDto UpdateUser(int id, CreateUpdateUserDto createUpdateUserDto)
         {
             var user = _mapper.Map<User>(createUpdateUserDto);
-            var updatedUser = _userRepository.UpdateUser(id, user); //??
+            var updatedUser = _userRepository.UpdateUser(id, user);
             return _mapper.Map<CreateUpdateUserDto>(updatedUser);
         }
 
@@ -50,12 +50,6 @@ namespace Diet_proyecto.Services.Implementations
         {
             _userRepository.DeleteUser(id);
         }
-        //public ICollection<ProductDto> GetProductByUser(int userId)
-        //{
-        //    var product = _userRepository.GetUserProduct(userId);
-
-        //    return _mapper.Map<ICollection<ProductDto>>(product);
-        //}
 
 
 

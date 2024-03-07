@@ -1,6 +1,7 @@
 ﻿using Diet_proyecto.Entities;
 using Diet_proyecto.Models;
 using Diet_proyecto.DBContext;
+using Microsoft.EntityFrameworkCore;
 
 namespace Diet_proyecto.Data
 {
@@ -10,16 +11,9 @@ namespace Diet_proyecto.Data
         {
         }
 
-        public User? ValidateUser(AuthenticationRequestBody authRequestBody)
+        public User? GetUserByUsernameAndPassword(string username, string password)
         {
-            if (authRequestBody.UserType == User.USER_TYPE_CLIENT)
-                return _context.Clients.FirstOrDefault(p => p.UserName == authRequestBody.UserName && p.Password == authRequestBody.Password);
-            else if (authRequestBody.UserType == User.USER_TYPE_SALESMAN)
-                return _context.Salesman.FirstOrDefault(p => p.UserName == authRequestBody.UserName && p.Password == authRequestBody.Password);
-            else if (authRequestBody.UserType == User.USER_TYPE_ADMIN)
-                return _context.Admin.FirstOrDefault(p => p.UserName == authRequestBody.UserName && p.Password == authRequestBody.Password);
-
-            return null;
+            return _context.Users.FirstOrDefault(u => u.UserName == username && u.Password == password);
         }
 
         public IEnumerable<User> GetAllUsers()
@@ -63,6 +57,16 @@ namespace Diet_proyecto.Data
                 _context.Users.Remove(user);
                 _context.SaveChanges();
             }
+        }
+
+        public bool UniqueEmail(string email)
+        {
+            return _context.Users.All(x => x.Email != email);
+        }
+
+        public bool UniqueUserName(string userName)
+        {
+            return _context.Users.All(u => u.UserName != userName);
         }
     }
 }

@@ -9,7 +9,7 @@ namespace Diet_proyecto.Entities
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-        public float TotalPrice { get; set; }  //suma de todos los itemOrder
+        public float TotalPrice { get; set; }  
         public Status StatusType { get; set; }
         public PaymentStatus PaymentStatus { get; set; }
         public int ClientId { get; set; }

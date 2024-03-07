@@ -1,6 +1,9 @@
 ﻿
+using Diet_proyecto.Entities;
 using Diet_proyecto.Models;
 using Diet_proyecto.Services.Interfaces;
+using FluentValidation;
+using FluentValidation.Results;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -15,10 +18,12 @@ namespace Diet_proyecto.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly IValidator<CreateUpdateUserDto> _userValidator;
 
-        public UserController(IUserService userService)
+        public UserController(IUserService userService, IValidator<CreateUpdateUserDto> userValidator)
         {
             _userService = userService;
+            _userValidator = userValidator;
         }
 
         [HttpGet]
@@ -64,13 +69,23 @@ namespace Diet_proyecto.Controllers
         }
 
         [HttpPost]
-        public ActionResult<CreateUpdateUserDto> CreateUser(CreateUpdateUserDto createUpdateUserDto)
+        public ActionResult<User> CreateUser(CreateUpdateUserDto createUpdateUserDto)
         {
             try
             {
+                createUpdateUserDto.ValidateEmailUnique = true;
+                createUpdateUserDto.ValidateUserNameUnique = true;
+
+                ValidationResult validationResult = _userValidator.Validate(createUpdateUserDto);
+
+                if (!validationResult.IsValid)
+                {
+                    return BadRequest(validationResult.Errors);
+                }
+
                 var user = _userService.CreateUser(createUpdateUserDto);
 
-                return CreatedAtAction(nameof(GetUser), user);
+                return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user);
 
             }
             catch (Exception ex)
@@ -86,11 +101,19 @@ namespace Diet_proyecto.Controllers
         {
             try
             {
-                //var userRole = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
-                //if (userRole != "Admin")
-                //{
-                //    return Forbid();
-                //}
+                var existingUser = _userService.GetUserById(id);
+                var isEmailChanged = existingUser?.Email != createUpdateUserDto.Email;
+                var isUserNameChanged = existingUser?.UserName != createUpdateUserDto.UserName;
+
+                createUpdateUserDto.ValidateEmailUnique = isEmailChanged;
+                createUpdateUserDto.ValidateUserNameUnique = isUserNameChanged;
+
+                ValidationResult validationResult = _userValidator.Validate(createUpdateUserDto);
+
+                if (!validationResult.IsValid)
+                {
+                    return BadRequest(validationResult.Errors);
+                }
 
                 var user = _userService.UpdateUser(id, createUpdateUserDto);
                 if (user == null)

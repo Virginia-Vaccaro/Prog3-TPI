@@ -1,3 +1,4 @@
+using Diet_proyecto.Entities;
 using Diet_proyecto.Models;
 
 namespace Diet_proyecto.Services.Interfaces
@@ -7,7 +8,7 @@ namespace Diet_proyecto.Services.Interfaces
         IEnumerable<UserDto> GetAllUsers();
         UserDto GetUserById(int? id);
 
-        CreateUpdateUserDto CreateUser(CreateUpdateUserDto createUpdateUserDto);
+        User CreateUser(CreateUpdateUserDto createUpdateUserDto);
 
         CreateUpdateUserDto UpdateUser(int id, CreateUpdateUserDto createUpdateUserDto);
 

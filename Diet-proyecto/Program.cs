@@ -12,6 +12,9 @@ using Diet_proyecto.Data.Interfaces;
 using Diet_proyecto.Data.Implementations;
 using Diet_proyecto.Configurations;
 using System.Text.Json.Serialization;
+using Diet_proyecto.Models;
+using FluentValidation;
+using Diet_proyecto.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,7 +28,7 @@ builder.Services.AddAutoMapper(typeof(AutoMapperConfig));
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(setupAction =>
 {
-    setupAction.SwaggerDoc("v1", new OpenApiInfo { Title = "Diet-proyecto API"});    //------------------------------ ?lo incluyo?
+    setupAction.SwaggerDoc("v1", new OpenApiInfo { Title = "Diet-proyecto API"}); 
 
     setupAction.AddSecurityDefinition("DietProyectoApiBearerAuth", new OpenApiSecurityScheme() //Esto va a permitir usar swagger con el token.
     {
@@ -50,10 +53,11 @@ builder.Services.AddSwaggerGen(setupAction =>
 
 });
 
+
 builder.Services.AddDbContext<DietContext>(dbContextOptions => dbContextOptions.UseSqlite(
     builder.Configuration["ConnectionStrings:DietDBConnectionString"]));
 
-//Inyección de dependencias  ----------------------------------------- van los services o repositories?
+//Inyección de dependencias  
 builder.Services.AddScoped<IUserRepository,  UserRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
@@ -62,8 +66,12 @@ builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IItemOrderRepository, ItemOrderRepository>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IItemOrderService, ItemOrderService>();
+builder.Services.AddScoped<IValidator<CreateUpdateUserDto>, UserValidator>();
+builder.Services.AddScoped<IValidator<CreateUpdateProductDto>, ProductValidator>();
 
-builder.Services.AddScoped<ICustomAuthenticationService, AutenticacionService>();
+
+
+builder.Services.AddScoped<ICustomAuthenticationService, AuthenticacionService>();
 
 builder.Services.AddAuthentication("Bearer") //"Bearer" es el tipo de auntenticación que tenemos que elegir después en PostMan para pasarle el token
     .AddJwtBearer(options => //Acá definimos la configuración de la autenticación. le decimos qué cosas queremos comprobar. La fecha de expiración se valida por defecto.

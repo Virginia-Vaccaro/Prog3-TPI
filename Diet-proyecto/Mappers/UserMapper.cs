@@ -5,7 +5,7 @@ namespace Diet_proyecto.Mappers
 {
     
       public class UserMapper
-        {
+      {
             public static List<UserDto> Map(IEnumerable<User> users)
             {
                 return users
@@ -22,6 +22,7 @@ namespace Diet_proyecto.Mappers
                     Email = user.Email,
                     PhoneNumber = user.PhoneNumber,
                     UserType = user.UserType,
+                    UserName = user.UserName,
                 };
             }
 
@@ -34,6 +35,7 @@ namespace Diet_proyecto.Mappers
                     Email = userDto.Email,
                     PhoneNumber = userDto.PhoneNumber,
                     UserType = userDto.UserType,
+                    UserName= userDto.UserName,
                 };
             }
 
@@ -70,7 +72,7 @@ namespace Diet_proyecto.Mappers
                 };
             }
 
-    }
+      }
 
     
 }

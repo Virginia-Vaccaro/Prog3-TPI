@@ -35,7 +35,7 @@ namespace Diet_proyecto.DBContext
                     Email = "vir.vaccaro@gmail.com",
                     Address = "calle 123",
                     DNI = 35131301,
-                    PhoneNumber = 11223344,
+                    PhoneNumber = "11223344",
                     UserName = "Vir",
                     Id = 1
                 });
@@ -49,7 +49,7 @@ namespace Diet_proyecto.DBContext
                     Email = "facu@gmail.com",
                     Address = "calle 456",
                     DNI = 11333222,
-                    PhoneNumber = 11223355,
+                    PhoneNumber = "11223355",
                     UserName = "Facu",
                     Id = 3
                 });
@@ -63,7 +63,7 @@ namespace Diet_proyecto.DBContext
                     Email = "lr@gmail.com",
                     Address = "calle 456",
                     DNI = 11333444,
-                    PhoneNumber = 11223366,
+                    PhoneNumber = "11223366",
                     UserName = "Lura",
                     Id = 2
                 });

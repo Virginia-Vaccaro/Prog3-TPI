@@ -18,7 +18,7 @@ namespace Diet_proyecto.Entities
         public string Email { get; set; }
         public string Address { get; set; }
         public int DNI { get; set; }
-        public int PhoneNumber { get; set; }
+        public string PhoneNumber { get; set; }
         [Required]
         public string UserName { get; set; }
         public string UserType { get; set; }

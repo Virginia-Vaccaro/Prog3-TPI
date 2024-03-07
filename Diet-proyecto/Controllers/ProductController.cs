@@ -3,7 +3,8 @@ using Diet_proyecto.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Diet_proyecto.Services.Interfaces;
-
+using FluentValidation;
+using FluentValidation.Results;
 
 namespace Diet_proyecto.Controllers
 {
@@ -13,10 +14,12 @@ namespace Diet_proyecto.Controllers
     public class ProductController : ControllerBase
     {
         private readonly IProductService _productService;
+        private readonly IValidator<CreateUpdateProductDto> _productValidator;
 
-        public ProductController(IProductService productService)
+        public ProductController(IProductService productService, IValidator<CreateUpdateProductDto> productValidator)
         {
             _productService = productService;
+            _productValidator = productValidator;
         }
 
         [HttpGet]
@@ -60,10 +63,11 @@ namespace Diet_proyecto.Controllers
         {
             try
             {
-                var validation = ValidateProduct(productDto);
-                if (!validation.IsValid)
+                ValidationResult validationResult = _productValidator.Validate(productDto);
+
+                if(!validationResult.IsValid)
                 {
-                    return BadRequest(validation.ErrorMessage);
+                    return BadRequest(validationResult.Errors);
                 }
 
                 var product = _productService.MapProductDtoToProduct(productDto);
@@ -83,10 +87,11 @@ namespace Diet_proyecto.Controllers
         {
             try
             {
-                var validation = ValidateProduct(product);
-                if (!validation.IsValid)
+                ValidationResult validationResult = _productValidator.Validate(product);
+
+                if (!validationResult.IsValid)
                 {
-                    return BadRequest(validation.ErrorMessage);
+                    return BadRequest(validationResult.Errors);
                 }
 
                 var prod = _productService.Get(id);
@@ -120,11 +125,6 @@ namespace Diet_proyecto.Controllers
         {
             try
             {
-                //if (!id.HasValue)
-                //{
-                //    return BadRequest("No se ingresó ningún id");
-                //}
-
                 var product = _productService.Get(id);
                 if (product == null)
                 {
@@ -142,33 +142,6 @@ namespace Diet_proyecto.Controllers
             
         }
 
-        private ValidationResultDto ValidateProduct(CreateUpdateProductDto product)
-        {
-            var errores = new List<string>();
-
-            if (product == null)
-            {
-                errores.Add("Debe especificar los datos del producto.");
-            }
-            else
-            {
-                if (string.IsNullOrEmpty(product.Code))
-                {
-                    errores.Add("El código del producto es requerido.");
-                }
-
-                if (string.IsNullOrEmpty(product.Description))
-                {
-                    errores.Add("La descripción del producto es requerida.");
-                }
-
-                if (product.Price < 0)
-                {
-                    errores.Add("El precio debe ser igual o mayor a 0.");
-                }
-            }
-
-            return new ValidationResultDto { ErrorMessages = errores };
-        }
+        
     }
 }
