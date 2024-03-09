@@ -19,5 +19,7 @@ namespace Diet_proyecto.Data
 
         bool UniqueUserName(string userName);
 
+        Task<User?> GetUserByUserName(string? userName);
+
     }
 }

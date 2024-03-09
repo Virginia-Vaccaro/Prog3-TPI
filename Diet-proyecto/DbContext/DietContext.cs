@@ -1,4 +1,4 @@
-﻿//en el using traemos el proyecto  y el mEF
+﻿
 using Diet_proyecto;
 using Diet_proyecto.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -21,7 +21,6 @@ namespace Diet_proyecto.DBContext
         {
         }
 
-        // hacer el On Model Creating que va cargandno data con el HasData
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>().HasDiscriminator(u => u.UserType);

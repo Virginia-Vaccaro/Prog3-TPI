@@ -12,6 +12,7 @@ namespace Diet_proyecto.Mappers
                 Quantity = itemOrder.Cantidad,
                 PriceItem = itemOrder.PriceCalc,
                 IdProduct = itemOrder.ProductId,
+               
             };
         }
 
@@ -22,6 +23,7 @@ namespace Diet_proyecto.Mappers
                 Cantidad = itemOrderDto.Quantity,
                 PriceCalc = itemOrderDto.PriceItem,
                 ProductId = itemOrderDto.IdProduct,
+          
             };
         }
     }

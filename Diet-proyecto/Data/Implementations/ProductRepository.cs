@@ -14,7 +14,7 @@ namespace Diet_proyecto.Data.Implementations
         {
             _context.Products.Add(product);
         }
-        public void DeleteProduct(Product product) //iría id? en parametro
+        public void DeleteProduct(Product product) 
         {
             _context.Products.Remove(product);
         }

@@ -68,5 +68,12 @@ namespace Diet_proyecto.Data
         {
             return _context.Users.All(u => u.UserName != userName);
         }
+
+        public async Task<User?> GetUserByUserName(string? userName)
+        {
+
+            return await _context.Users.FirstOrDefaultAsync(u => u.UserName == userName);
+
+        }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace Diet_proyecto.Models
+﻿using Diet_proyecto.Entities;
+
+namespace Diet_proyecto.Models
 {
     public class ItemOrderDto
     {

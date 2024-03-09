@@ -3,6 +3,7 @@ using System;
 using Diet_proyecto.DBContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Diet_proyecto.Migrations
 {
     [DbContext(typeof(DietContext))]
-    partial class DietContextModelSnapshot : ModelSnapshot
+    [Migration("20240308044059_NewMethod")]
+    partial class NewMethod
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.5");
@@ -53,10 +55,6 @@ namespace Diet_proyecto.Migrations
 
                     b.Property<int>("ClientId")
                         .HasColumnType("INTEGER");
-
-                    b.Property<string>("DeliveryDateMessage")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
 
                     b.Property<int>("DeliveryStatus")
                         .HasColumnType("INTEGER");

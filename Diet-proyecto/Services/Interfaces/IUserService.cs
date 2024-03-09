@@ -13,6 +13,6 @@ namespace Diet_proyecto.Services.Interfaces
         CreateUpdateUserDto UpdateUser(int id, CreateUpdateUserDto createUpdateUserDto);
 
         void DeleteUser(int id);
-        //ICollection<ProductDto> GetProductByUser(int studentId);
+        
     }
 }

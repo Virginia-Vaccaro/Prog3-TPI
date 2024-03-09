@@ -9,8 +9,8 @@ namespace Diet_proyecto.Data.Interfaces
         Task<Order?> GetOrderById(int id);
         Task<Order> UpdateOrder(Order order);
 
-        //Task<Order?> GetOrderByUser(int idUser);
+        Task<IEnumerable<Order>> GetOrdersByUser(int idUser);
 
-        //Task<Order?> DeleteOrder(int id);
+        Task DeleteOrder(int id);
     }
 }

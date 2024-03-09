@@ -9,5 +9,11 @@ namespace Diet_proyecto.Models
         public List<ItemOrderDto> Items { get; set; }
         public float TotalPrice { get; set; }
         public PaymentStatus PaymentStatus { get; set; }
+
+        public DeliveryStatus DeliveryStatus { get; set; }
+
+        public string DeliveryDateMessage { get; set; }
+
+
     }
 }

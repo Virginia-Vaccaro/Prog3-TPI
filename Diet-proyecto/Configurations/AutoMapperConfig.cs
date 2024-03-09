@@ -19,6 +19,8 @@ namespace Diet_proyecto.Configurations
 
             CreateMap<CreateUpdateProductDto, Product>();
             CreateMap<Product, CreateUpdateProductDto>();
+
+            CreateMap<OrderDto, Order>();
         }
 
     }

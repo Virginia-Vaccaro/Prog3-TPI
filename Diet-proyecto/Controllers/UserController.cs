@@ -135,11 +135,6 @@ namespace Diet_proyecto.Controllers
         {
             try
             {
-                //var userRole = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
-                //if (userRole != "Admin")
-                //{
-                //    return Forbid();
-                //}
 
                 _userService.DeleteUser(id);
 

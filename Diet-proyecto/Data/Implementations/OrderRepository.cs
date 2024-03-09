@@ -32,5 +32,21 @@ namespace Diet_proyecto.Data.Implementations
             await _context.SaveChangesAsync();
             return order;
         }
+
+        public async Task DeleteOrder(int id)
+        {
+            var order = _context.Orders.FirstOrDefault(o => o.Id==id);
+            _context.Orders.Remove(order);
+            await _context.SaveChangesAsync();
+        }
+
+
+
+        public async Task<IEnumerable<Order>> GetOrdersByUser(int idUser)
+        {
+            return await _context.Orders
+                .Where(o => o.ClientId == idUser)
+                .ToListAsync();
+        }
     }
 }
