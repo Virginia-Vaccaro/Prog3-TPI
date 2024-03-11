@@ -13,10 +13,12 @@ namespace Diet_proyecto.Data.Implementations
         public void AddProduct(Product product)
         {
             _context.Products.Add(product);
+            _context.SaveChanges();
         }
         public void DeleteProduct(Product product) 
         {
             _context.Products.Remove(product);
+            _context.SaveChanges();
         }
         public Product? GetProduct(int productId)
         {
@@ -26,6 +28,7 @@ namespace Diet_proyecto.Data.Implementations
         public void UpdateProduct(Product product)
         {
             _context.Products.Update(product);
+            _context.SaveChanges();
         }
 
         public IEnumerable<Product> GetAllProducts() { 

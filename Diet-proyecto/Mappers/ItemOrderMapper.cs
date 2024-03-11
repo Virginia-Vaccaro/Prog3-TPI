@@ -26,5 +26,28 @@ namespace Diet_proyecto.Mappers
           
             };
         }
+
+        public static ItemOrderDto Map(CreateItemOrderDto createItemOrderDto)
+        {
+            return new ItemOrderDto
+            {
+                Quantity = createItemOrderDto.Quantity,
+                IdProduct = createItemOrderDto.IdProduct
+            };
+        }
+
+        public static List<ItemOrderDto> MapList(List<CreateItemOrderDto> createItemOrderDtos)
+        {
+            List<ItemOrderDto> itemOrderDtos = new List<ItemOrderDto>();
+
+            foreach (var createItemOrderDto in createItemOrderDtos)
+            {
+                var itemOrderDto = Map(createItemOrderDto);
+                itemOrderDtos.Add(itemOrderDto);
+            }
+
+            return itemOrderDtos;
+        }
+
     }
 }

@@ -22,7 +22,7 @@ namespace Diet_proyecto.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateOrder(List<ItemOrderDto> itemOrders, DeliveryStatus deliveryStatus, PaymentStatus paymentStatus)
+        public async Task<IActionResult> CreateOrder(List<CreateItemOrderDto> itemOrders, DeliveryStatus deliveryStatus, PaymentStatus paymentStatus)
         {
             try
             {
@@ -62,14 +62,14 @@ namespace Diet_proyecto.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdateOrder(int id, [FromBody] OrderDto orderDto)
+        public async Task<IActionResult> UpdateOrder(int id, [FromBody] UpdateOrderDto orderDto)
         {
             try
             {
-                if (orderDto == null || id != orderDto.Id)
-                {
-                    return BadRequest("No se puede actualizar la orden");
-                }
+                //if (orderDto == null || id != orderDto.Id)
+                //{
+                //    return BadRequest("No se puede actualizar la orden");
+                //}
                 var updatedOrder = await _orderService.UpdateOrder(id, orderDto);
                 if (updatedOrder == null)
                 {

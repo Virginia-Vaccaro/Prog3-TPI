@@ -6,7 +6,7 @@ namespace Diet_proyecto.Models
     {
         public int Id { get; set; }
         public int ClientId { get; set; }
-        public List<ItemOrderDto> Items { get; set; }
+        public List<ItemOrderDto>? Items { get; set; }
         public float TotalPrice { get; set; }
         public PaymentStatus PaymentStatus { get; set; }
 

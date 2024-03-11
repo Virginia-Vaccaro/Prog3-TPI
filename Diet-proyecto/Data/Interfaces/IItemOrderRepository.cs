@@ -2,5 +2,6 @@
 {
     public interface IItemOrderRepository : IRepository
     {
+        Task DeleteItem(int id);
     }
 }

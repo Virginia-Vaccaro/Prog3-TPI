@@ -13,35 +13,27 @@ namespace Diet_proyecto.Services.Implementations
         private readonly IOrderRepository _orderRepository;
         private readonly IProductRepository _productRepository;
         private readonly IUserRepository _userRepository;
+        private readonly IItemOrderRepository _itemOrderRepository;
 
-        public OrderService(IOrderRepository orderRepository, IProductRepository productRepository, IUserRepository userRepository)
+        public OrderService(IOrderRepository orderRepository, IProductRepository productRepository, IUserRepository userRepository, IItemOrderRepository itemOrderRepository)
         {
             _orderRepository = orderRepository;
             _productRepository = productRepository;
             _userRepository = userRepository;
+            _itemOrderRepository = itemOrderRepository;
         }
 
 
 
 
-        public async Task<OrderDto> CreateOrder(List<ItemOrderDto> itemOrders, int userId, DeliveryStatus deliveryStatus, PaymentStatus paymentStatus)
+        public async Task<OrderDto> CreateOrder(List<CreateItemOrderDto> itemOrders, int userId, DeliveryStatus deliveryStatus, PaymentStatus paymentStatus)
         {
 
             if (itemOrders == null || itemOrders.Count == 0)
             {
                 throw new Exception("No se seleccionaron productos. La orden no fue generada.");
             }
-
-            foreach (var item in itemOrders)
-            {
-                var product =  _productRepository.GetProduct(item.IdProduct);
-                if (product == null || product.StatusType != Status.Active)
-                {
-                    throw new Exception("Uno o más productos no están disponibles para la venta.");
-                }
-            }
-
-            
+      
             DateTime currentDate = DateTime.Today;
             DayOfWeek currentDayOfWeek = currentDate.DayOfWeek;
             DateTime deliveryDate;
@@ -59,12 +51,11 @@ namespace Diet_proyecto.Services.Implementations
 
             var order = new Order
             {
-                ClientId = userId,
-                OrderStatus = Enum.OrderStatus.InProgress,
-                PaymentStatus = PaymentStatus.Unpaid,
+                ClientId = userId,     
+                PaymentStatus = paymentStatus,
                 DeliveryStatus = deliveryStatus,
                 DeliveryDateMessage = deliveryMessage
-        };
+            };
 
             foreach (var item in itemOrders)
             {
@@ -79,6 +70,12 @@ namespace Diet_proyecto.Services.Implementations
                     throw new Exception("Producto no encontrado");
                 }
 
+                if (product.StatusType != Status.Active)
+                    {
+                        throw new Exception("Uno o más productos no están disponibles para la venta.");
+                    }
+
+
                 var itemOrder = new ItemOrder
                 {
                     ProductId = product.Id,
@@ -89,6 +86,8 @@ namespace Diet_proyecto.Services.Implementations
                 order.TotalPrice += itemOrder.PriceCalc;
 
                 order.Items.Add(itemOrder);
+
+                order.OrderStatus = Enum.OrderStatus.Sold;
             }
 
 
@@ -115,7 +114,7 @@ namespace Diet_proyecto.Services.Implementations
 
 
 
-        public async Task<OrderDto> UpdateOrder(int id,  OrderDto orderDto)
+        public async Task<OrderDto> UpdateOrder(int id,  UpdateOrderDto orderDto)
         {
             var existingOrder = await _orderRepository.GetOrderById(id);
             if(existingOrder == null)
@@ -131,19 +130,29 @@ namespace Diet_proyecto.Services.Implementations
 
             if (orderDto.Items != null && orderDto.Items.Any())
             {
-               
+
+                List<int> itemsToDelete = new List<int>();
+
                 foreach (var itemDto in orderDto.Items)
                 {
                     var existingItem =  existingOrder.Items.FirstOrDefault(item => item.ProductId == itemDto.IdProduct);
                     if (existingItem != null)
                     {
-                        var product = _productRepository.GetProduct(existingItem.ProductId);
-                        if (product == null)
+                        if (itemDto.Quantity == 0)
                         {
-                            throw new Exception("Producto no encontrado");
+                            itemsToDelete.Add(existingItem.ItemOrderId);
                         }
-                        existingItem.Cantidad = itemDto.Quantity;
-                        existingItem.PriceCalc = product.Price * existingItem.Cantidad;
+                        else
+                        {
+                            var product = _productRepository.GetProduct(existingItem.ProductId);
+                            if (product == null)
+                            {
+                                throw new Exception("Producto no encontrado");
+                            }
+                            existingItem.Cantidad = itemDto.Quantity;
+                            existingItem.PriceCalc = product.Price * existingItem.Cantidad;
+
+                        } 
                     }
                     else
                     {
@@ -161,6 +170,11 @@ namespace Diet_proyecto.Services.Implementations
                         };
                         existingOrder.Items.Add(newItem);
                     }
+                }
+
+                foreach (var itemId in itemsToDelete)
+                {
+                    await _itemOrderRepository.DeleteItem(itemId);
                 }
             }
           
