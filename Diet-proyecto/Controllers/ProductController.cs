@@ -5,12 +5,13 @@ using Microsoft.AspNetCore.Mvc;
 using Diet_proyecto.Services.Interfaces;
 using FluentValidation;
 using FluentValidation.Results;
+using System.Security.Claims;
 
 namespace Diet_proyecto.Controllers
 {
     [ApiController]
     [Route("api/product")]
-    [Authorize(Roles ="Salesman")]
+   
     public class ProductController : ControllerBase
     {
         private readonly IProductService _productService;
@@ -59,10 +60,17 @@ namespace Diet_proyecto.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public ActionResult<ProductDto> CreateProduct(CreateUpdateProductDto productDto)
         {
             try
             {
+                var userRole = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+                if (userRole != "Salesman")
+                {
+                    return Forbid();
+                }
+
                 ValidationResult validationResult = _productValidator.Validate(productDto);
 
                 if(!validationResult.IsValid)
@@ -83,10 +91,17 @@ namespace Diet_proyecto.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize]
         public ActionResult<ProductDto> UpdateProduct(int id, CreateUpdateProductDto product)
         {
             try
             {
+                var userRole = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+                if (userRole != "Salesman")
+                {
+                    return Forbid();
+                }
+
                 ValidationResult validationResult = _productValidator.Validate(product);
 
                 if (!validationResult.IsValid)
@@ -121,10 +136,17 @@ namespace Diet_proyecto.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
         public ActionResult<ProductDto> DeleteProduct(int id)
         {
             try
             {
+                var userRole = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+                if (userRole != "Salesman")
+                {
+                    return Forbid();
+                }
+
                 var product = _productService.Get(id);
                 if (product == null)
                 {

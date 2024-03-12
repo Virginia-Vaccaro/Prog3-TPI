@@ -11,7 +11,7 @@ namespace Diet_proyecto.Controllers
 {
     [ApiController]
     [Route("api/order")]
-    [Authorize(Roles = "Client")]
+    
     public class OrderController : ControllerBase
     {
         private readonly IOrderService _orderService;
@@ -22,10 +22,17 @@ namespace Diet_proyecto.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> CreateOrder(List<CreateItemOrderDto> itemOrders, DeliveryStatus deliveryStatus, PaymentStatus paymentStatus)
         {
             try
             {
+                var userRole = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+                if (userRole != "Client")
+                {
+                    return Forbid();
+                }
+
                 if (itemOrders == null || !itemOrders.Any())
                 {
                     return BadRequest("No se puede crear una orden vacía.");
@@ -42,12 +49,14 @@ namespace Diet_proyecto.Controllers
         }
 
         [HttpGet("{id}")]
-
+        [Authorize]
         public async Task<IActionResult> GetOrderById(int id)
         {
             try
             {
-                var order = await _orderService.GetOrderById(id);
+                var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                var userRole = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+                var order = await _orderService.GetOrderById(id, int.Parse(userId), userRole);
                 if (order == null)
                 {
                     return NotFound();
@@ -62,15 +71,14 @@ namespace Diet_proyecto.Controllers
         }
 
         [HttpPut]
+        [Authorize]
         public async Task<IActionResult> UpdateOrder(int id, [FromBody] UpdateOrderDto orderDto)
         {
             try
             {
-                //if (orderDto == null || id != orderDto.Id)
-                //{
-                //    return BadRequest("No se puede actualizar la orden");
-                //}
-                var updatedOrder = await _orderService.UpdateOrder(id, orderDto);
+                var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                var updatedOrder = await _orderService.UpdateOrder(id, orderDto, userId);
+
                 if (updatedOrder == null)
                 {
                     return NotFound("No se encontró la orden");
@@ -84,12 +92,15 @@ namespace Diet_proyecto.Controllers
         }
 
         [HttpDelete("{id}")]
-
+        [Authorize]
         public async Task<IActionResult> DeleteOrder(int id)
         {
             try
             {
-                var order = await _orderService.GetOrderById(id);
+                var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                var userRole = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+
+                var order = await _orderService.GetOrderById(id, int.Parse(userId), userRole);
                 if (order == null)
                 {
                     return NotFound();
@@ -107,20 +118,29 @@ namespace Diet_proyecto.Controllers
 
 
         [HttpGet("user/{userName}/order")]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<OrderDto>>> GetOrdersByUserName(string userName)
         {
             try
             {
-                var orders = await _orderService.GetOrderByUser(userName);
-                if (orders.Any())
+                var userRole = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+                if (userRole == "Client" || userRole == "Salesman")
                 {
-                    return Ok(orders);
+                    var orders = await _orderService.GetOrderByUser(userName);
+                    if (orders.Any())
+                    {
+                        return Ok(orders);
+                    }
+                    else
+                    {
+                        return NotFound("El usuario no tiene órdenes creadas.");
+                    }
+                    
                 }
-                else
-                {
-                    return NotFound("El usuario no tiene órdenes creadas.");
-                }
-                
+                return Forbid();
+
+
+
             }
             catch (Exception ex)
             {

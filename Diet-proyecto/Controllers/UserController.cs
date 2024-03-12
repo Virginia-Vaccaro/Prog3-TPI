@@ -14,7 +14,7 @@ namespace Diet_proyecto.Controllers
 {
     [ApiController]
     [Route("api/users")]
-    [Authorize(Roles ="Admin")]
+    
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -27,10 +27,17 @@ namespace Diet_proyecto.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public ActionResult<IEnumerable<UserDto>> GetUsers()
         {
             try
             {
+                var userRole = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+                if (userRole != "Admin")
+                {
+                    return Forbid();
+                }
+
                 var users = _userService.GetAllUsers();
 
                 return Ok(users);
@@ -44,10 +51,17 @@ namespace Diet_proyecto.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         public ActionResult<UserDto> GetUser(int? id)
         {
             try
             {
+                var userRole = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+                if (userRole != "Admin")
+                {
+                    return Forbid();
+                }
+
                 if (!id.HasValue)
                 {
                     return BadRequest("No se ingresó ningún id");
@@ -97,10 +111,17 @@ namespace Diet_proyecto.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize]
         public ActionResult<CreateUpdateUserDto> UpdateUser(int id, CreateUpdateUserDto createUpdateUserDto)
         {
             try
             {
+                var userRole = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+                if (userRole != "Admin")
+                {
+                    return Forbid();
+                }
+
                 var existingUser = _userService.GetUserById(id);
                 var isEmailChanged = existingUser?.Email != createUpdateUserDto.Email;
                 var isUserNameChanged = existingUser?.UserName != createUpdateUserDto.UserName;
@@ -131,10 +152,16 @@ namespace Diet_proyecto.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
         public ActionResult<UserDto> DeleteUser(int id)
         {
             try
             {
+                var userRole = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+                if (userRole != "Admin")
+                {
+                    return Forbid();
+                }
 
                 _userService.DeleteUser(id);
 

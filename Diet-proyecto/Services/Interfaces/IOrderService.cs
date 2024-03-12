@@ -8,9 +8,9 @@ namespace Diet_proyecto.Services.Interfaces
     {
         Task<OrderDto> CreateOrder(List<CreateItemOrderDto> itemOrder, int userId, DeliveryStatus deliveryStatus,  PaymentStatus paymentStatus );
 
-        Task<OrderDto?> GetOrderById(int id);
+        Task<OrderDto?> GetOrderById(int id, int idUser, string userRole);
 
-        Task<OrderDto> UpdateOrder(int id, UpdateOrderDto orderDto);
+        Task<OrderDto> UpdateOrder(int id, UpdateOrderDto orderDto, string userId);
 
         Task DeleteOrder(int id);
 

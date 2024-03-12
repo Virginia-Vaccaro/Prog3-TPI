@@ -5,6 +5,7 @@ using Diet_proyecto.Models;
 using Diet_proyecto.Services.Interfaces;
 using Diet_proyecto.Mappers;
 using Diet_proyecto.Data;
+using System.Security.Claims;
 
 namespace Diet_proyecto.Services.Implementations
 {
@@ -100,21 +101,30 @@ namespace Diet_proyecto.Services.Implementations
 
 
 
-        public async Task<OrderDto?> GetOrderById(int id)
+        public async Task<OrderDto?> GetOrderById(int id, int userId, string userRole)
         {
             var order = await _orderRepository.GetOrderById(id);
+
             if (order == null)
             {
                 return null;
             }
-            return OrderMapper.Map(order);
+            if (order.ClientId == userId || userRole == "Salesman")
+            { 
+                return OrderMapper.Map(order);
+            }
+            else
+            {
+                return null;
+            }
+                
         }
 
 
 
 
 
-        public async Task<OrderDto> UpdateOrder(int id,  UpdateOrderDto orderDto)
+        public async Task<OrderDto> UpdateOrder(int id,  UpdateOrderDto orderDto, string userId)
         {
             var existingOrder = await _orderRepository.GetOrderById(id);
             if(existingOrder == null)
@@ -122,70 +132,78 @@ namespace Diet_proyecto.Services.Implementations
                 throw new Exception("No se encontró la orden.");
             }
 
-            if (orderDto.Items == null || orderDto.Items.All(item => item.Quantity == 0))
+            if (existingOrder.ClientId == int.Parse(userId))
             {
-                await _orderRepository.DeleteOrder(id); 
-                throw new Exception("La orden se eliminó con éxito."); 
-            }
-
-            if (orderDto.Items != null && orderDto.Items.Any())
-            {
-
-                List<int> itemsToDelete = new List<int>();
-
-                foreach (var itemDto in orderDto.Items)
+                if (orderDto.Items == null || orderDto.Items.All(item => item.Quantity == 0))
                 {
-                    var existingItem =  existingOrder.Items.FirstOrDefault(item => item.ProductId == itemDto.IdProduct);
-                    if (existingItem != null)
+                    await _orderRepository.DeleteOrder(id);
+                    throw new Exception("La orden se eliminó con éxito.");
+                }
+
+                if (orderDto.Items != null && orderDto.Items.Any())
+                {
+
+                    List<int> itemsToDelete = new List<int>();
+
+                    foreach (var itemDto in orderDto.Items)
                     {
-                        if (itemDto.Quantity == 0)
+                        var existingItem = existingOrder.Items.FirstOrDefault(item => item.ProductId == itemDto.IdProduct);
+                        if (existingItem != null)
                         {
-                            itemsToDelete.Add(existingItem.ItemOrderId);
+                            if (itemDto.Quantity == 0)
+                            {
+                                itemsToDelete.Add(existingItem.ItemOrderId);
+                            }
+                            else
+                            {
+                                var product = _productRepository.GetProduct(existingItem.ProductId);
+                                if (product == null)
+                                {
+                                    throw new Exception("Producto no encontrado");
+                                }
+                                existingItem.Cantidad = itemDto.Quantity;
+                                existingItem.PriceCalc = product.Price * existingItem.Cantidad;
+
+                            }
                         }
                         else
                         {
-                            var product = _productRepository.GetProduct(existingItem.ProductId);
+                            var product = _productRepository.GetProduct(itemDto.IdProduct);
                             if (product == null)
                             {
                                 throw new Exception("Producto no encontrado");
                             }
-                            existingItem.Cantidad = itemDto.Quantity;
-                            existingItem.PriceCalc = product.Price * existingItem.Cantidad;
 
-                        } 
-                    }
-                    else
-                    {
-                        var product = _productRepository.GetProduct(itemDto.IdProduct);
-                        if (product == null)
-                        {
-                            throw new Exception("Producto no encontrado");
+                            var newItem = new ItemOrder
+                            {
+                                ProductId = itemDto.IdProduct,
+                                Cantidad = itemDto.Quantity,
+                                PriceCalc = itemDto.Quantity * product.Price
+                            };
+                            existingOrder.Items.Add(newItem);
                         }
-                        
-                        var newItem = new ItemOrder
-                        {
-                            ProductId = itemDto.IdProduct,
-                            Cantidad = itemDto.Quantity,
-                            PriceCalc = itemDto.Quantity * product.Price
-                        };
-                        existingOrder.Items.Add(newItem);
+                    }
+
+                    foreach (var itemId in itemsToDelete)
+                    {
+                        await _itemOrderRepository.DeleteItem(itemId);
                     }
                 }
 
-                foreach (var itemId in itemsToDelete)
-                {
-                    await _itemOrderRepository.DeleteItem(itemId);
-                }
+                existingOrder.PaymentStatus = orderDto.PaymentStatus;
+                existingOrder.DeliveryStatus = orderDto.DeliveryStatus;
+
+                existingOrder.TotalPrice = existingOrder.Items.Sum(item => item.PriceCalc);
+
+                var updatedOrder = await _orderRepository.UpdateOrder(existingOrder);
+
+                return OrderMapper.Map(updatedOrder);
             }
-          
-            existingOrder.PaymentStatus = orderDto.PaymentStatus;
-            existingOrder.DeliveryStatus = orderDto.DeliveryStatus;
-            
-            existingOrder.TotalPrice = existingOrder.Items.Sum(item => item.PriceCalc);
-
-            var updatedOrder = await _orderRepository.UpdateOrder(existingOrder);
-
-            return OrderMapper.Map(updatedOrder);
+            else
+            {
+                return null;
+            }
+  
         }
 
 
